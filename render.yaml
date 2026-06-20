@@ -1,0 +1,30 @@
+# Render Blueprint — deploys the CV inference loop as a Background Worker.
+# Background workers have no public port and take no inbound traffic.
+# NOTE: Background workers are a PAID instance type on Render (no Free option);
+#       the Starter plan below bills compute on top of the $0/mo Hobby workspace.
+services:
+  - name: parking-cv-worker
+    type: worker
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    autoDeploy: true
+    envVars:
+      # Required: backend write key (without it, status PUTs return 401)
+      - key: API_KEY
+        sync: false
+      # Backend target (defaults are fine; override only if it moves)
+      - key: BACKEND_BASE
+        value: https://parking-bishkek.onrender.com
+      - key: LOCATION_ID
+        value: ala-too
+      - key: PARKING_ID_FORMAT
+        value: "spot-{id:02d}"
+      # Optional: enable the live scheme image (all three needed together;
+      # leave unset to skip image upload — spot statuses still push)
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
