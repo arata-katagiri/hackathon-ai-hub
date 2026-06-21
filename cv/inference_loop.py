@@ -136,7 +136,10 @@ def push_to_backend(results):
     for r in results:
         pid = r["parking_id"]
         url = parking_status_url(pid)
-        payload = {"available": r["status"] == "Empty"}
+        payload = {
+            "available": r["status"] == "Empty",
+            "confidence": round(r["confidence"], 4),
+        }
         try:
             resp = requests.put(url, json=payload, headers=headers, timeout=30)
             if not resp.ok:
